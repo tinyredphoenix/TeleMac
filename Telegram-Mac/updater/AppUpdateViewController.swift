@@ -732,52 +732,16 @@ private func cancelStagedUpdate() {
 }
 
 private func resetUpdater() {
-    
-    #if !GITHUB
-        let update:()->Void = {
-            let state = stateValue.with { $0.loadingState }
-            switch state {
-            case .readyToInstall:
-                stageNewerUpdate()
-            case .installing, .unarchiving, .loading:
-                break
-            default:
-                driver?.checkForUpdates(at: updateFeedURL, host: host, domain: updater.host)
-            }
-        }
-    
-    
-        let signal: Signal<Never, NoError> = Signal { subscriber in
-            update()
-            subscriber.putCompletion()
-            return EmptyDisposable
-            } |> delay(20 * 60, queue: .mainQueue()) |> restart
-        disposable.set(signal.start())
-    
-        update()
-    #endif
-    
-   
+    // TeleMac: Official Telegram auto-updates are permanently disabled
+    return
 }
 
 private var updaterSource: UpdaterSource? = nil
 
 func updater_resetWithUpdaterSource(_ source: UpdaterSource, force: Bool = true) {
-    let state = stateValue.with { $0 }
-    switch state.loadingState {
-    case .readyToInstall:
-        updaterSource = source
-        if force {
-            resetUpdater()
-        }
-        return
-    default:
-        break
-    }
-    if updaterSource != source {
-        updaterSource = source
-        driver = makeUpdateDriver(source)
-    }
+    // TeleMac: Official Telegram auto-updates are permanently disabled
+    return
+}
     if force {
         if state.loadingState != .initializing {
             updateState {

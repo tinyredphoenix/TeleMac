@@ -1332,26 +1332,13 @@ class AppDelegate: NSResponder, NSApplicationDelegate, NSUserNotificationCenterD
 
 
     @IBAction func checkForUpdates(_ sender: Any) {
-        #if !APP_STORE
-            showModal(with: InputDataModalController(AppUpdateViewController()), for: window)
-            #if STABLE
-                if let context = self.contextValue?.context {
-                    updater_resetWithUpdaterSource(.internal(context: context))
-                } else {
-                    updater_resetWithUpdaterSource(.external(context: nil))
-                }
-            #else
-                updater_resetWithUpdaterSource(.external(context: self.contextValue?.context))
-            #endif
-        #endif
+        alert(for: window, info: "TeleMac is up to date (Custom Build). Official Telegram auto-updates are disabled.")
     }
     
     override func awakeFromNib() {
-        #if APP_STORE
         if let menu = NSApp.mainMenu?.item(at: 0)?.submenu, let sparkleItem = menu.item(withTag: 1000) {
             menu.removeItem(sparkleItem)
         }
-        #endif
         installServicesMenu()
     }
 
@@ -1369,9 +1356,7 @@ class AppDelegate: NSResponder, NSApplicationDelegate, NSUserNotificationCenterD
     
     
     @objc func checkUpdates() {
-        #if !APP_STORE
-        showModal(with: InputDataModalController(AppUpdateViewController()), for: window)
-        #endif
+        alert(for: window, info: "TeleMac is up to date (Custom Build). Official Telegram auto-updates are disabled.")
     }
     
     
