@@ -36,12 +36,51 @@ jobs:
           fi
           xcodebuild -version
 
+      - name: Cache Homebrew Downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-${{ hashFiles('.github/workflows/build.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
+
       - name: Install Build Tools via Homebrew
         run: |
           brew install cmake ninja meson nasm yasm zlib autoconf libtool automake pkg-config
 
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Cache Native Core Frameworks
+        uses: actions/cache@v4
+        with:
+          path: |
+            core-xprojects/**/build
+            submodules/tgcalls/SharedHeaders
+            submodules/telegram-ios/submodules/*/SharedHeaders
+          key: ${{ runner.os }}-core-frameworks-${{ hashFiles('scripts/configure_frameworks.sh', 'scripts/framework-inputs.sh', 'core-xprojects/**') }}
+          restore-keys: |
+            ${{ runner.os }}-core-frameworks-
+
+      - name: Cache Xcode DerivedData
+        uses: actions/cache@v4
+        with:
+          path: build/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('Telegram-Mac.xcworkspace/**', 'packages/**') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
 
       - name: Configure and Build Native Frameworks
         run: |
