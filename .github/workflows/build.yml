@@ -14,8 +14,8 @@ on:
 
 jobs:
   build:
-    name: Build TeleMac (macOS Apple Silicon)
-    runs-on: macos-14
+    name: Build TeleMac
+    runs-on: macos-latest
     timeout-minutes: 180
 
     steps:
